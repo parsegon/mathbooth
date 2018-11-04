@@ -1,0 +1,510 @@
+<html>
+  <head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700" rel="stylesheet">
+    <script src="./vue.js"></script>
+    <script src="./mathex.js"></script>
+    <link href="./math.css" rel="stylesheet">
+    <link href="./katex.css" rel="stylesheet">
+
+    <style>
+    body {
+      margin:0px;
+      padding:0px;
+    }
+    section[name="header"]{
+      width:100%;
+      height:50px;
+      border-bottom:1px #ddd solid;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+
+    }
+
+    section[name="header"] > img{
+      height:48px;
+      display: inline-block;
+      float:left;
+      margin:1px;
+      margin-left:10px;
+
+    }
+
+    section[name="chat"]{
+      width:calc(100% - 400px);
+      height:calc(100vh - 50px);
+      float:left;
+      border-right:1px #ddd solid;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+
+    }
+
+    section[name="info"]{
+      width:400px;
+      height:calc(100vh - 50px);
+      float:left;
+      padding:20px;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+      box-sizing: border-box;
+    }
+
+    section[name="info"] > h1{
+      font-weight:100;
+      margin:0px;
+      padding:0px;
+      font-size:40px;
+    }
+
+    section[name="info"] > h2{
+      font-weight:300;
+      margin:0px;
+      padding:0px;
+      margin-top:10px;
+      font-size:16px;
+    }
+
+    section[name="info"] > p{
+      font-weight:300;
+      margin:0px;
+      padding:0px;
+      margin-top:10px;
+      font-size:16px;
+    }
+
+    section[name="chat"] > .messages {
+      width:100%;
+      display: inline-block;
+      height:calc(100vh - 190px);
+      background-color:transparent;
+      overflow: hidden;
+    overflow-y: scroll;
+
+    }
+
+    section[name="chat"] > .editor {
+      width:100%;
+      height:140px;
+      background-color:#f8f8f8;
+      border-top:2px #F37A80 solid;
+      box-sizing: border-box;
+      padding:20px;
+      position: relative;
+    }
+
+    section[name="chat"] > .editor > textarea{
+      width: 100%;
+      border-radius: 15px;
+      border: 1px #eee solid;
+      resize: none;
+      box-sizing: border-box;
+      font-size:16px;
+      padding: 14px 12px;
+      height: auto;
+      position: relative;
+      outline: none;
+    }
+
+    section[name="chat"] > .editor > .previewBox {
+      bottom: 140px;
+      left:0px;
+      width:100%;
+      height:60px;
+      background-color:aliceblue;
+      border-top:1px #F37A80 solid;
+      background-color:#F37A80;
+      position: absolute;
+      display: inline-block;
+    }
+
+    section[name="chat"] > .editor > .previewBox > div[equation] {
+
+      margin: 0px;
+    margin-left: 21px;
+    margin-top:5px;
+    zoom: .6;
+    }
+
+    section[name="chat"] > .editor > .toolbar{
+      width:100%;
+      height:40px;
+      padding-top:10px;
+      background-color:transparent;
+    }
+
+    section[name="chat"] > .editor > .toolbar > .submit {
+      background-color:black;
+      border-radius:15px;
+      height:30px;
+      cursor: pointer;
+      float:right;
+      padding:7px 15px;
+      font-size:14px;
+      box-sizing: border-box;
+      color:white;
+
+    }
+
+    section[name="chat"] > .editor > .toolbar > .submit:hover {
+      opacity:.7;
+      cursor: pointer;
+    }
+
+    section[name="chat"] > .editor > .toolbar > .option {
+      background-color:transparent;
+      border-radius:15px;
+      height:30px;
+      cursor: pointer;
+      float:right;
+      padding:7px 15px;
+      border:1px black solid;
+      box-sizing: border-box;
+      font-size:14px;
+      margin-right:10px;
+      box-sizing: border-box;
+      color:black;
+
+    }
+
+    section[name="chat"] > .editor > .toolbar > .option.chosen {
+      border:2px #F37A80 solid;
+      color:#F37A80;
+      padding:6px 13px;
+    }
+
+    section[name="chat"] > .messages > .message{
+      width: 100%;
+      display: inline-block;
+      padding:20px;
+      padding-bottom:0px;
+      box-sizing: border-box;
+      float:left;
+      min-height: 100px;
+      background-color:transparent;
+    }
+
+    section[name="chat"] > .messages > .message > .profile{
+      width:60px;
+      height:60px;
+      float:left;
+      background-color:transparent;
+    }
+
+    section[name="chat"] > .messages > .message > .profile > .picture{
+      width:50px;
+      border-radius;
+      height:50px;
+      float:left;
+      border-radius:100%;
+      text-align: center;
+      border:1px #ddd solid;
+      box-sizing: border-box;
+      background-color:transparent;
+    }
+    section[name="chat"] > .messages > .message > .profile > .picture > img{
+      height:40px;
+      margin-top:5px;
+    }
+
+    section[name="chat"] > .messages > .message > .profile > .name{
+      width:50px;
+      height:30px;
+      text-align: center;
+      float:left;
+      border-radius:0px;
+      color:#bbb;
+      font-size:12px;
+      padding:8px;
+      box-sizing: border-box;
+      background-color:transparent;
+    }
+
+
+      section[name="chat"] > .messages > .message > .messageBox{
+        width:calc(100% - 80px);
+        min-height:50px;
+        float:left;
+        background-color:transparent;
+
+      }
+
+      section[name="chat"] > .messages > .message.rightmessage > .messageBox{
+        float:right;
+      }
+
+      section[name="chat"] > .messages > .message.rightmessage > .profile{
+        float:right;
+      }
+
+      section[name="chat"] > .messages > .message.rightmessage > .profile > .picture{
+        float:right;
+      }
+
+      section[name="chat"] > .messages > .message.rightmessage > .profile > .name{
+        float:right;
+      }
+
+
+      section[name="chat"] > .messages > .message > .messageBox > .message{
+        min-height:40px;
+        width:auto;
+        display: inline-block;
+        background-color:#f8f8f8;
+        padding:10px 13px;
+        float:left;
+        clear:both;
+        border-radius:8px;
+        box-sizing: border-box;
+        margin-bottom:10px;
+      }
+
+      section[name="chat"] > .messages > .message > .messageBox > .message > div[equation]{
+        margin: 0px;
+        margin-left: 21px;
+        margin-top:5px;
+        zoom: .6;
+        width: auto;
+    margin-left: -17px;
+      }
+
+
+      section[name="chat"] > .messages > .message > .messageBox > .message > span > img{
+        height:20px;
+      }
+
+      section[name="chat"] > .messages > .message.rightmessage > .messageBox > .message{
+        float:right;
+      }
+
+      section[name="chat"] > .messages > .message > .messageBox > .selector{
+        height:40px;
+        width:auto;
+        display: inline-block;
+        background-color:transparent;
+        padding:10px 0px;
+        float:left;
+        clear:both;
+        border-radius:8px;
+        box-sizing: border-box;
+        margin-bottom:20px;
+      }
+
+      section[name="chat"] > .messages > .message > .messageBox > .selector > .option{
+        height:34px;
+        float:left;
+        border-radius:20px;
+        border:1px #444 solid;
+        margin-right:15px;
+        font-size:12px;
+        padding: 9px 13px;
+        box-sizing: border-box;
+      }
+
+      section[name="chat"] > .messages > .message > .messageBox > .selector > .option:hover{
+        border-color:#F37A80;
+        cursor: pointer;
+        color:#F37A80;
+      }
+
+      section[name="chat"] > .messages > .message > .messageBox > .selector > .option.chosen{
+        background-color:#F37A80;
+        color:white !important;
+        border-color:#F37A80;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main">
+    <section name="header">
+      <img src="./mathissi.png">
+    </section>
+    <section name="chat">
+      <div class="messages">
+
+      <!--
+      <div class="message leftmessage">
+        <div class="profile">
+          <div class="picture"><img src="./ada.png"></div>
+          <div class="name">Ada</div>
+        </div>
+        <div class="messageBox">
+          <div class="message">Hello there!</div>
+          <div class="message">Happy to connect you with the right tutor, what is your current subject?</div>
+          <div class="selector">
+            <div class="option">Algebra I</div>
+            <div class="option">Geometry</div>
+            <div class="option">Algebra II</div>
+            <div class="option">Pre-Calculus</div>
+
+            <div class="option">Calculus</div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <div class="message rightmessage">
+        <div class="profile">
+          <div class="picture"><img src="./ada.png"></div>
+          <div class="name">Ada</div>
+        </div>
+        <div class="messageBox">
+          <div class="message">Hello there!</div>
+          <div class="message">Happy to connect you with the right tutor, what is your current subject?</div>
+
+
+        </div>
+      </div>
+      -->
+
+      <div class="message" v-for="group in messagesGroups" v-bind:class="{'leftmessage' : group.owner == 'them', 'rightmessage' : group.owner == 'me' }">
+        <div class="profile">
+          <div class="picture"><img src="./ada.png"></div>
+          <div class="name"><span v-if="group.owner == 'them'">Ada</span><span v-else>You</span></div>
+        </div>
+        <div class="messageBox">
+          <div class="message" v-for="message in group.messages" v-bind:class="{'selector' : message.type == 'selector'}">
+            <span v-if="message.type == 'loader'"><img src="./loader.gif"></span>
+
+            <span v-if="message.type == 'text'">{{message.content}}</span>
+            <div v-if="message.type == 'math'" equation>{{{mathex(message.content)}}}</div>
+
+            <div class="option" v-for="option in message.options" v-on:click="message.execute(option), option.chosen = true" v-bind:class="{'chosen' : option.chosen}">{{option.content}}</div>
+
+          </div>
+
+
+        </div>
+      </div>
+
+
+
+      </div>
+      <div class="editor">
+        <div class="previewBox" v-if="currentType == 'math' && input.trim() != ''" >
+          <div equation class="white">{{{mathex(input)}}}</div>
+        </div>
+        <textarea v-model="input" v-on:keyup.enter="sendMessage()"></textarea>
+        <div class="toolbar">
+
+          <div class="submit" v-on:click="sendMessage()">Send Message</div>
+          <div class="option" v-on:click="currentType = 'geometry'" v-bind:class="{'chosen' : currentType == 'geometry'}">Geometry</div>
+
+          <div class="option" v-on:click="currentType = 'math'" v-bind:class="{'chosen' : currentType == 'math'}">Math</div>
+          <div class="option" v-on:click="currentType = 'text'" v-bind:class="{'chosen' : currentType == 'text'}">Text</div>
+
+
+        </div>
+      </div>
+    </section>
+    <section name="info">
+      <h1>Get Math Help in Minutes</h1>
+      <h2>Work with an expert tutor to figure out what you aren't getting for as little as $0.10 / message with a minimum of at least $3.00 per session. </h2>
+
+    </section>
+    </div>
+  </body>
+  <script>
+
+  var mathissi = new Vue({
+    el: '#main',
+    data: {
+      input: "",
+      currentType: "text",
+      messages: [],
+    },
+    computed: {
+      messagesGroups: function(){
+        if(this.messages.length == 0){return;}
+        currentOwner = this.messages[0].owner;
+        finalArr = [{owner: currentOwner, messages: []}];
+        for(var i = 0; i < this.messages.length; i++){
+          if(this.messages[i].owner == currentOwner){
+            finalArr[finalArr.length - 1].messages.push(this.messages[i]);
+          } else {
+            currentOwner = this.messages[i].owner;
+            finalArr.push({owner: currentOwner, messages: [this.messages[i]]});
+          }
+        }
+        return finalArr;
+      }
+    },
+    created: function(){
+      setTimeout(function(){
+        mathissi.addMessageWithArtificialDelay({
+          owner: "them",
+          type: "text",
+          content: "Hello There!"
+        });
+        setTimeout(function(){
+
+          mathissi.addMessageWithArtificialDelay({
+            owner: "them",
+            type: "text",
+            content: "Happy to connect you with the right tutor, what is your current subject?"
+          });
+
+          setTimeout(function(){
+            mathissi.addMessageWithArtificialDelay({
+              owner: "them",
+              type: "selector",
+              options: [
+                {chosen: false, content: "Algebra I"},
+                {chosen: false, content: "Geometry"},
+                {chosen: false, content: "Algebra II"},
+                {chosen: false, content: "Pre-Calculus"},
+                {chosen: false, content: "Calculus"}
+              ],
+              execute: function(item){
+                mathissi.addMessageWithArtificialDelay({
+                  owner: "them",
+                  type: "text",
+                  content: "Awesome!"
+                });
+                setTimeout(function(){
+                  mathissi.addMessageWithArtificialDelay({
+                    owner: "them",
+                    type: "text",
+                    content: "And what " + item.content + " question are you having trouble with?"
+                  });
+                }, 800);
+
+              }
+            });
+          }, 1000);
+
+
+        }, 3000);
+      }, 1);
+    },
+    methods: {
+      killLoaders: function(owner){
+        for(var i = 0; i < this.messages.length; i++){
+          if(this.messages[i].type == 'loader' && this.messages[i].owner == owner){
+            this.messages.splice(i, 1);
+          }
+        }
+      },
+      addMessageWithArtificialDelay: function(message){
+        this.messages.push({ owner: message.owner, type: 'loader'});
+        setTimeout(function(){
+          mathissi.killLoaders(message.owner);
+          mathissi.messages.push(message);
+        }, 800);
+      },
+      addMessage: function(message){
+        this.messages.push(message);
+      },
+      sendMessage: function(){
+        this.addMessage({ owner: 'me', type: this.currentType, content: this.input});
+        this.input = "";
+      },
+      mathex: function(str){
+        m = new mathex(str);
+        return m.html;
+      }
+
+    }
+  });
+  </script>
+</html>
