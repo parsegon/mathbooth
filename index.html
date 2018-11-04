@@ -5,7 +5,10 @@
     <script src="./mathex.js"></script>
     <link href="./math.css" rel="stylesheet">
     <link href="./katex.css" rel="stylesheet">
-
+    <script
+  src="https://code.jquery.com/jquery-3.3.1.js"
+  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+  crossorigin="anonymous"></script>
     <style>
     body {
       margin:0px;
@@ -90,6 +93,29 @@
       box-sizing: border-box;
       padding:20px;
       position: relative;
+    }
+
+    section[name="chat"] > .editor > .disabled {
+      top: 0px;
+      left:0px;
+      width:100%;
+      height:140px;
+      background-color:#F37A80;
+      z-index:10;
+      position: absolute;
+      opacity:1;
+      padding:60px;
+      box-sizing: border-box;
+      color:white;
+      transition: 1s;
+      -webkit-transition: 1s;
+      text-align: center;
+    }
+
+
+    section[name="chat"] > .editor > .disabled.hidden {
+      opacity:0;
+      pointer-events: none;
     }
 
     section[name="chat"] > .editor > textarea{
@@ -258,6 +284,58 @@
         margin-bottom:10px;
       }
 
+      section[name="chat"] > .messages > .message > .messageBox > .message.savedPayment{
+        background-color:#F37A80;
+        color:white;
+      }
+
+      section[name="chat"] > .messages > .message > .messageBox > .message > input {
+        height: 31px;
+        outline: none;
+        float: left;
+        border-radius: 4px;
+        padding: 2px 8px;
+        border: 1px #eee solid;
+        display: inline-block;
+        margin-right: 10px;
+      }
+
+      section[name="chat"] > .messages > .message > .messageBox > .message > input.number {
+        font-family: monospace;
+      }
+
+      section[name="chat"] > .messages > .message > .messageBox > .message > input.small {
+        width:48px;
+      }
+
+      section[name="chat"] > .messages > .message > .messageBox > .message > .slash {
+          font-size: 12px;
+          padding-top: 9px;
+          margin-right: 10px;
+          margin-left: 14px;
+          display: inline-block;
+    float: left;
+      }
+
+      section[name="chat"] > .messages > .message > .messageBox > .message > .submit {
+        width: 153px;
+        float: left;
+        background-color: #F37A80;
+        padding: 8px 12px;
+        text-align: center;
+        color: white;
+        margin-top: 0px;
+        margin-left: 13px;
+        box-sizing: border-box;
+        font-size: 13px;
+        cursor: pointer;
+        border-radius: 22px;
+      }
+
+      section[name="chat"] > .messages > .message > .messageBox > .message > .submit:hover {
+        opacity:.8;
+      }
+
       section[name="chat"] > .messages > .message > .messageBox > .message > div[equation]{
         margin: 0px;
         margin-left: 21px;
@@ -319,7 +397,7 @@
       <img src="./mathissi.png">
     </section>
     <section name="chat">
-      <div class="messages">
+      <div class="messages" id="messages">
 
       <!--
       <div class="message leftmessage">
@@ -359,17 +437,33 @@
 
       <div class="message" v-for="group in messagesGroups" v-bind:class="{'leftmessage' : group.owner == 'them', 'rightmessage' : group.owner == 'me' }">
         <div class="profile">
-          <div class="picture"><img src="./ada.png"></div>
+          <div class="picture">
+            <img src="./ada.png" v-if="group.owner == 'them'">
+            <img src="./you.png" v-else style="margin-top:8px;">
+          </div>
+
           <div class="name"><span v-if="group.owner == 'them'">Ada</span><span v-else>You</span></div>
         </div>
-        <div class="messageBox">
-          <div class="message" v-for="message in group.messages" v-bind:class="{'selector' : message.type == 'selector'}">
+        <div class="messageBox" >
+          <div class="message" v-for="message in group.messages" v-bind:class="{'selector' : message.type == 'selector', 'payment' : message.type == 'payment','savedPayment' : message.type == 'payment' && message.saved }">
             <span v-if="message.type == 'loader'"><img src="./loader.gif"></span>
 
             <span v-if="message.type == 'text'">{{message.content}}</span>
             <div v-if="message.type == 'math'" equation>{{{mathex(message.content)}}}</div>
 
             <div class="option" v-for="option in message.options" v-on:click="message.execute(option), option.chosen = true" v-bind:class="{'chosen' : option.chosen}">{{option.content}}</div>
+
+
+            <input min="16" max="16" class="number" v-if="message.type == 'payment' && !message.saved" v-model="message.number" placeholder="0000 0000 0000 0000">
+            <div class="slash" v-if="message.type == 'payment' && !message.saved"> Expiration: </div>
+            <input min="1" max="2" class="small" v-if="message.type == 'payment' && !message.saved" v-model="message.exp_month" placeholder="01">
+            <div class="slash" v-if="message.type == 'payment' && !message.saved" style="margin-left:0px;"> / </div>
+            <input min="4" max="4" class="small" v-if="message.type == 'payment' && !message.saved" v-model="message.exp_year" placeholder="2020">
+            <div class="slash" v-if="message.type == 'payment' && !message.saved"> CVC: </div>
+            <input min="3" max="4" class="small" v-if="message.type == 'payment' && !message.saved" v-model="message.cvc" placeholder="123">
+            <div class="submit" v-if="message.type == 'payment' && !message.saved" v-on:click="message.execute(message)">Attach Credit Card</div>
+            <span v-if="message.type == 'payment' && message.saved">Successfully Submitted!</span>
+
 
           </div>
 
@@ -384,11 +478,12 @@
         <div class="previewBox" v-if="currentType == 'math' && input.trim() != ''" >
           <div equation class="white">{{{mathex(input)}}}</div>
         </div>
+        <div class="disabled" v-bind:class="{'hidden' : !disableEditor}">Interface with Ada briefly before sending messages </div>
         <textarea v-model="input" v-on:keyup.enter="sendMessage()"></textarea>
         <div class="toolbar">
 
           <div class="submit" v-on:click="sendMessage()">Send Message</div>
-          <div class="option" v-on:click="currentType = 'geometry'" v-bind:class="{'chosen' : currentType == 'geometry'}">Geometry</div>
+          <!--<div class="option" v-on:click="currentType = 'geometry'" v-bind:class="{'chosen' : currentType == 'geometry'}">Geometry</div>-->
 
           <div class="option" v-on:click="currentType = 'math'" v-bind:class="{'chosen' : currentType == 'math'}">Math</div>
           <div class="option" v-on:click="currentType = 'text'" v-bind:class="{'chosen' : currentType == 'text'}">Text</div>
@@ -412,6 +507,8 @@
       input: "",
       currentType: "text",
       messages: [],
+      disableEditor: true,
+      responder: function(){}
     },
     computed: {
       messagesGroups: function(){
@@ -467,6 +564,41 @@
                     type: "text",
                     content: "And what " + item.content + " question are you having trouble with?"
                   });
+
+                  mathissi.responder = function(){
+                    setTimeout(function(){
+                      mathissi.addMessageWithArtificialDelay({
+                        owner: "them",
+                        type: "text",
+                        content: "Great! I'll work on matching you with a current tutor. Enter in your payment information in the meantime. You can also further elaborate on your question - you won't be charged for those messages."
+                      });
+
+                      setTimeout(function(){
+                        mathissi.addMessageWithArtificialDelay({
+                          owner: "them",
+                          type: "payment",
+                          number: "",
+                          cvc: "",
+                          exp_month: "",
+                          exp_year: "",
+                          last4: "",
+                          saved: false,
+                          execute: function(message){
+                            message.last4 = message.number.substr(message.number - 4);
+                            message.saved = true;
+                            mathissi.addMessageWithArtificialDelay({
+                              owner: "them",
+                              type: "text",
+                              content: "Thanks for saving your card! Your tutor will be with you shortly."
+                            });
+
+                          }
+                        });
+                      }, 1000);
+                    }, 12000);
+
+                  };
+                  mathissi.disableEditor = false;
                 }, 800);
 
               }
@@ -490,14 +622,20 @@
         setTimeout(function(){
           mathissi.killLoaders(message.owner);
           mathissi.messages.push(message);
+          $("#messages").animate({ scrollTop: $('#messages').prop("scrollHeight")}, 500);
+
         }, 800);
       },
       addMessage: function(message){
         this.messages.push(message);
+        $("#messages").animate({ scrollTop: $('#messages').prop("scrollHeight")}, 500);
+
       },
       sendMessage: function(){
         this.addMessage({ owner: 'me', type: this.currentType, content: this.input});
         this.input = "";
+        this.responder();
+        this.responder = function(){};
       },
       mathex: function(str){
         m = new mathex(str);
