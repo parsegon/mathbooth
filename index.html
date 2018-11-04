@@ -19,16 +19,18 @@
       height:50px;
       border-bottom:1px #ddd solid;
       box-sizing: border-box;
+      display: inline-block;
       font-family: 'Roboto', sans-serif;
 
     }
 
     section[name="header"] > img{
-      height:48px;
+      height:43px;
       display: inline-block;
       float:left;
       margin:1px;
-      margin-left:10px;
+      margin-top:8px;
+      margin-left:23px;
 
     }
 
@@ -394,7 +396,7 @@
   <body>
     <div id="main">
     <section name="header">
-      <img src="./mathissi.png">
+      <img src="./mathbooth.png">
     </section>
     <section name="chat">
       <div class="messages" id="messages">
@@ -501,7 +503,7 @@
   </body>
   <script>
 
-  var mathissi = new Vue({
+  var mathbooth = new Vue({
     el: '#main',
     data: {
       input: "",
@@ -528,21 +530,21 @@
     },
     created: function(){
       setTimeout(function(){
-        mathissi.addMessageWithArtificialDelay({
+        mathbooth.addMessageWithArtificialDelay({
           owner: "them",
           type: "text",
           content: "Hello There!"
         });
         setTimeout(function(){
 
-          mathissi.addMessageWithArtificialDelay({
+          mathbooth.addMessageWithArtificialDelay({
             owner: "them",
             type: "text",
             content: "Happy to connect you with the right tutor, what is your current subject?"
           });
 
           setTimeout(function(){
-            mathissi.addMessageWithArtificialDelay({
+            mathbooth.addMessageWithArtificialDelay({
               owner: "them",
               type: "selector",
               options: [
@@ -553,28 +555,28 @@
                 {chosen: false, content: "Calculus"}
               ],
               execute: function(item){
-                mathissi.addMessageWithArtificialDelay({
+                mathbooth.addMessageWithArtificialDelay({
                   owner: "them",
                   type: "text",
                   content: "Awesome!"
                 });
                 setTimeout(function(){
-                  mathissi.addMessageWithArtificialDelay({
+                  mathbooth.addMessageWithArtificialDelay({
                     owner: "them",
                     type: "text",
                     content: "And what " + item.content + " question are you having trouble with?"
                   });
 
-                  mathissi.responder = function(){
+                  mathbooth.responder = function(){
                     setTimeout(function(){
-                      mathissi.addMessageWithArtificialDelay({
+                      mathbooth.addMessageWithArtificialDelay({
                         owner: "them",
                         type: "text",
                         content: "Great! I'll work on matching you with a current tutor. Enter in your payment information in the meantime. You can also further elaborate on your question - you won't be charged for those messages."
                       });
 
                       setTimeout(function(){
-                        mathissi.addMessageWithArtificialDelay({
+                        mathbooth.addMessageWithArtificialDelay({
                           owner: "them",
                           type: "payment",
                           number: "",
@@ -586,7 +588,7 @@
                           execute: function(message){
                             message.last4 = message.number.substr(message.number - 4);
                             message.saved = true;
-                            mathissi.addMessageWithArtificialDelay({
+                            mathbooth.addMessageWithArtificialDelay({
                               owner: "them",
                               type: "text",
                               content: "Thanks for saving your card! Your tutor will be with you shortly."
@@ -598,7 +600,7 @@
                     }, 12000);
 
                   };
-                  mathissi.disableEditor = false;
+                  mathbooth.disableEditor = false;
                 }, 800);
 
               }
@@ -620,8 +622,8 @@
       addMessageWithArtificialDelay: function(message){
         this.messages.push({ owner: message.owner, type: 'loader'});
         setTimeout(function(){
-          mathissi.killLoaders(message.owner);
-          mathissi.messages.push(message);
+          mathbooth.killLoaders(message.owner);
+          mathbooth.messages.push(message);
           $("#messages").animate({ scrollTop: $('#messages').prop("scrollHeight")}, 500);
 
         }, 800);
